@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1",
+    "name": "Wireless Bluetooth Headphones",
+    "price": 79.99,
+    "description": "Premium quality wireless headphones with noise cancellation and 30-hour battery life. Perfect for music lovers and professionals.",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop&crop=center",
+    "stock": 15,
+    "features": ["Noise Cancellation", "30h Battery", "Quick Charge", "Premium Sound"]
+  },
+  {
+    "id": "2",
+    "name": "Organic Cotton T-Shirt",
+    "price": 29.99,
+    "description": "Soft and comfortable organic cotton t-shirt. Sustainable fashion that feels great and looks amazing.",
+    "category": "Clothing",
+    "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=center",
+    "stock": 25,
+    "features": ["Organic Cotton", "Sustainable", "Soft Feel", "Multiple Colors"]
+  },
+  {
+    "id": "3",
+    "name": "Smart Fitness Watch",
+    "price": 199.99,
+    "description": "Advanced fitness tracking with heart rate monitoring, GPS, and smartphone connectivity. Your perfect workout companion.",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1544117519-31a4b719223d?w=400&h=400&fit=crop&crop=center",
+    "stock": 8,
+    "features": ["Heart Rate Monitor", "GPS Tracking", "Water Resistant", "7-day Battery"]
+  },
+  {
+    "id": "4",
+    "name": "Premium Coffee Beans",
+    "price": 24.99,
+    "description": "Freshly roasted arabica coffee beans sourced from sustainable farms. Rich, full-bodied flavor in every cup.",
+    "category": "Food & Beverage",
+    "image": "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop&crop=center",
+    "stock": 50,
+    "features": ["100% Arabica", "Freshly Roasted", "Sustainable Source", "Rich Flavor"]
+  },
+  {
+    "id": "5",
+    "name": "Modern Desk Lamp",
+    "price": 45.99,
+    "description": "Sleek LED desk lamp with adjustable brightness and color temperature. Perfect for work and study spaces.",
+    "category": "Home & Garden",
+    "image": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400",
+    "stock": 12,
+    "features": ["LED Technology", "Adjustable Brightness", "Color Temperature", "Modern Design"]
+  },
+  {
+    "id": "6",
+    "name": "Leather Messenger Bag",
+    "price": 89.99,
+    "description": "Handcrafted genuine leather messenger bag. Stylish and functional for professionals and students.",
+    "category": "Accessories",
+    "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=center",
+    "stock": 18,
+    "features": ["Genuine Leather", "Handcrafted", "Multiple Compartments", "Adjustable Strap"]
+  }
+]
