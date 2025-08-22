@@ -64,10 +64,7 @@ async function main() {
   
   for (const product of products) {
     const result = await prisma.product.create({
-      data: {
-        ...product,
-        features: product.features.join(', ')
-      },
+      data: product,
     })
     console.log(`Created product with id: ${result.id}`)
   }

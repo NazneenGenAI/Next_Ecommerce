@@ -6,7 +6,8 @@
       "Bash(npm install:*)",
       "Bash(npm uninstall:*)",
       "Bash(npx prisma:*)",
-      "Bash(git init:*)"
+      "Bash(git init:*)",
+      "Bash(git remote add:*)"
     ],
     "deny": [],
     "ask": []
