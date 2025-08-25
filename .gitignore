@@ -47,3 +47,6 @@ dev.db*
 
 # OS
 Thumbs.db
+
+.vercel
+.env*.local
