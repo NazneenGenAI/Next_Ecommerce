@@ -1,41 +1,43 @@
 # Vercel Deployment Guide
 
+## Quick Fix for Database Issues
+
+**⚠️ If products aren't showing after deployment:**
+
+1. **Deploy the app first** (let it build without database operations)
+2. **After deployment, visit**: `https://your-app.vercel.app/api/setup-database` (POST request)
+3. **Or run this command locally**:
+   ```bash
+   curl -X POST https://your-app.vercel.app/api/setup-database
+   ```
+
+This will seed your production database with products.
+
 ## Environment Variables Setup
 
 Make sure you have these environment variables set in your Vercel project:
 
-1. **DATABASE_URL** - Your production PostgreSQL URL
+1. **DATABASE_URL** - Your production PostgreSQL URL from Supabase
 2. **NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY** - Your Stripe publishable key
 3. **STRIPE_SECRET_KEY** - Your Stripe secret key  
 4. **STRIPE_WEBHOOK_SECRET** - Your Stripe webhook secret
 
+### Getting the correct DATABASE_URL:
+
+1. Go to your **Supabase Dashboard**
+2. Navigate to **Settings** → **Database**
+3. Copy the **Connection string** under "Connection pooling"
+4. Use the **Transaction** mode connection string for better compatibility with Vercel
+
 ## Database Setup Steps
 
-### 1. Check if your production database is accessible:
-```bash
-# Test database connection
-npx prisma db pull --print
-```
+The build process now only:
+1. Generates Prisma client
+2. Builds the Next.js app
 
-### 2. Push schema to production database:
-```bash
-npx prisma db push
-```
-
-### 3. Seed the production database:
-```bash
-npx prisma db seed
-```
+Database setup happens separately via the `/api/setup-database` endpoint.
 
 ## Vercel Configuration
-
-The build script automatically:
-1. Generates Prisma client
-2. Pushes database schema
-3. Seeds the database
-4. Builds the Next.js app
-
-## Troubleshooting
 
 ### Products not showing after deployment?
 
