@@ -8,7 +8,7 @@ const products = [
     price: 79.99,
     description: "Premium quality wireless headphones with noise cancellation and 30-hour battery life.",
     category: "Electronics",
-    image: "https://via.placeholder.com/400x400/3B82F6/FFFFFF?text=Headphones",
+    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
     stock: 15,
     features: ["Noise Cancellation", "30h Battery", "Quick Charge", "Premium Sound"]
   },
@@ -17,7 +17,7 @@ const products = [
     price: 29.99,
     description: "Soft and comfortable organic cotton t-shirt. Sustainable fashion that feels great and looks amazing.",
     category: "Clothing",
-    image: "https://via.placeholder.com/400x400/10B981/FFFFFF?text=T-Shirt",
+    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=300&fit=crop",
     stock: 25,
     features: ["Organic Cotton", "Sustainable", "Soft Feel", "Multiple Colors"]
   },
@@ -26,7 +26,7 @@ const products = [
     price: 199.99,
     description: "Advanced fitness tracking with heart rate monitoring, GPS, and smartphone connectivity.",
     category: "Electronics",
-    image: "https://via.placeholder.com/400x400/8B5CF6/FFFFFF?text=Watch",
+    image: "https://images.unsplash.com/photo-1544117519-31a4b719223d?w=400&h=300&fit=crop",
     stock: 8,
     features: ["Heart Rate Monitor", "GPS Tracking", "Water Resistant", "7-day Battery"]
   },
@@ -35,7 +35,7 @@ const products = [
     price: 24.99,
     description: "Freshly roasted arabica coffee beans sourced from sustainable farms.",
     category: "Food & Beverage",
-    image: "https://via.placeholder.com/400x400/D97706/FFFFFF?text=Coffee",
+    image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=300&fit=crop",
     stock: 50,
     features: ["100% Arabica", "Freshly Roasted", "Sustainable Source", "Rich Flavor"]
   },
@@ -44,7 +44,7 @@ const products = [
     price: 45.99,
     description: "Sleek LED desk lamp with adjustable brightness and color temperature.",
     category: "Home & Garden",
-    image: "https://via.placeholder.com/400x400/F59E0B/FFFFFF?text=Desk+Lamp",
+    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
     stock: 12,
     features: ["LED Technology", "Adjustable Brightness", "Color Temperature", "Modern Design"]
   },
@@ -53,7 +53,7 @@ const products = [
     price: 89.99,
     description: "Handcrafted genuine leather messenger bag. Stylish and functional.",
     category: "Accessories",
-    image: "https://via.placeholder.com/400x400/7C2D12/FFFFFF?text=Bag",
+    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop",
     stock: 18,
     features: ["Genuine Leather", "Handcrafted", "Multiple Compartments", "Adjustable Strap"]
   }
@@ -63,10 +63,19 @@ async function main() {
   console.log('Start seeding...')
   
   for (const product of products) {
-    const result = await prisma.product.create({
-      data: product,
+    // Check if product with this name already exists
+    const existingProduct = await prisma.product.findFirst({
+      where: { name: product.name }
     })
-    console.log(`Created product with id: ${result.id}`)
+    
+    if (existingProduct) {
+      console.log(`Product "${product.name}" already exists, skipping...`)
+    } else {
+      const result = await prisma.product.create({
+        data: product,
+      })
+      console.log(`Created product with id: ${result.id}`)
+    }
   }
   
   console.log('Seeding finished.')
