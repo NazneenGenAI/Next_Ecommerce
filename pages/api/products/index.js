@@ -1,9 +1,23 @@
 // pages/api/products/index.js
-import { prisma } from '../../../lib/prisma'
+import { PrismaClient } from '@prisma/client'
+
+// Initialize Prisma client with error handling
+let prisma
+try {
+  prisma = new PrismaClient()
+} catch (error) {
+  console.error('Failed to initialize Prisma client:', error)
+}
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
+      // If Prisma client failed to initialize, return empty array
+      if (!prisma) {
+        console.error('Prisma client not available')
+        return res.status(200).json([])
+      }
+
       const { category, search } = req.query
       
       const where = {}
@@ -19,15 +33,35 @@ export default async function handler(req, res) {
         ]
       }
       
+      // Test connection first
+      await prisma.$connect()
+      
       const products = await prisma.product.findMany({
         where,
         orderBy: { createdAt: 'desc' }
       })
       
-      res.status(200).json(products)
+      // Ensure we always return an array
+      const safeProducts = Array.isArray(products) ? products : []
+      
+      console.log(`Returning ${safeProducts.length} products`)
+      res.status(200).json(safeProducts)
+      
     } catch (error) {
       console.error('Error fetching products:', error)
-      res.status(500).json({ error: 'Failed to fetch products' })
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        stack: error.stack
+      })
+      
+      // Always return an empty array on error to prevent frontend crashes
+      res.status(200).json([])
+    } finally {
+      // Disconnect to prevent connection leaks
+      if (prisma) {
+        await prisma.$disconnect().catch(console.error)
+      }
     }
   } else {
     res.setHeader('Allow', ['GET'])
