@@ -20,8 +20,11 @@ export default function Home() {
       const response = await fetch('/api/products');
       console.log('Homepage API Response status:', response.status);
       
-      const products = await response.json();
-      console.log('Homepage received products:', products?.length || 0);
+      const data = await response.json();
+      console.log('Homepage received data:', data?.length || 0, 'hasError:', !!data?.error);
+      
+      // Handle both success response (array) and error response (object with products array)
+      const products = Array.isArray(data) ? data : (data?.products || []);
       
       setFeaturedProducts(products.slice(0, 4)); // Get first 4 products
       console.log('✅ Featured products set:', products.slice(0, 4).length);

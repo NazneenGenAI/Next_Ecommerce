@@ -32,17 +32,21 @@ export default function Products() {
       console.log('Received data:', { 
         isArray: Array.isArray(data), 
         length: data?.length, 
-        firstItem: data?.[0] 
+        firstItem: data?.[0],
+        hasError: !!data?.error 
       });
       
-      setProducts(data);
-      setFilteredProducts(data);
+      // Handle both success response (array) and error response (object with products array)
+      const products = Array.isArray(data) ? data : (data?.products || []);
+      
+      setProducts(products);
+      setFilteredProducts(products);
       
       // Extract unique categories
-      const uniqueCategories = ['All', ...new Set(data.map(product => product.category))];
+      const uniqueCategories = ['All', ...new Set(products.map(product => product.category))];
       setCategories(uniqueCategories);
       
-      console.log('✅ Products loaded successfully:', data.length, 'products');
+      console.log('✅ Products loaded successfully:', products.length, 'products');
     } catch (error) {
       console.error('❌ Error fetching products:', error);
       console.error('Error details:', {
