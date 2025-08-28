@@ -10,14 +10,21 @@ try {
 }
 
 export default async function handler(req, res) {
+  console.log('=== PRODUCTS API CALLED ===')
+  console.log('Method:', req.method)
+  console.log('Query params:', req.query)
+  console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL)
+  console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+  
   if (req.method === 'GET') {
     try {
       // If Prisma client failed to initialize, return empty array
       if (!prisma) {
-        console.error('Prisma client not available')
+        console.error('❌ Prisma client not available')
         return res.status(200).json([])
       }
 
+      console.log('✅ Prisma client available')
       const { category, search } = req.query
       
       const where = {}
@@ -34,8 +41,11 @@ export default async function handler(req, res) {
       }
       
       // Test connection first
+      console.log('🔄 Testing database connection...')
       await prisma.$connect()
+      console.log('✅ Database connected successfully')
       
+      console.log('🔍 Querying products with filter:', where)
       const products = await prisma.product.findMany({
         where,
         orderBy: { createdAt: 'desc' }
@@ -44,7 +54,8 @@ export default async function handler(req, res) {
       // Ensure we always return an array
       const safeProducts = Array.isArray(products) ? products : []
       
-      console.log(`Returning ${safeProducts.length} products`)
+      console.log(`✅ Successfully fetched ${safeProducts.length} products`)
+      console.log('Products preview:', safeProducts.slice(0, 2).map(p => ({ id: p.id, name: p.name })))
       res.status(200).json(safeProducts)
       
     } catch (error) {

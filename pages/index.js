@@ -14,11 +14,19 @@ export default function Home() {
 
   const fetchFeaturedProducts = async () => {
     try {
+      console.log('=== HOMEPAGE: Fetching featured products... ===');
+      console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+      
       const response = await fetch('/api/products');
+      console.log('Homepage API Response status:', response.status);
+      
       const products = await response.json();
+      console.log('Homepage received products:', products?.length || 0);
+      
       setFeaturedProducts(products.slice(0, 4)); // Get first 4 products
+      console.log('✅ Featured products set:', products.slice(0, 4).length);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('❌ Homepage error fetching products:', error);
     } finally {
       setLoading(false);
     }

@@ -1,7 +1,9 @@
 // pages/register.js
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 export default function Register() {
@@ -12,8 +14,10 @@ export default function Register() {
     password: '',
     confirmPassword: ''
   });
+  const { register } = useAuth();
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
@@ -21,9 +25,32 @@ export default function Register() {
       return;
     }
     
-    // Mock registration functionality
-    toast.success('Registration successful!');
-    // In a real app, handle user registration here
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        register(data.user);
+        router.push('/');
+      } else {
+        toast.error(data.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast.error('Something went wrong. Please try again.');
+    }
   };
 
   const handleChange = (e) => {

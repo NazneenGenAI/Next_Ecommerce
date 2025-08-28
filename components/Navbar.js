@@ -1,11 +1,13 @@
 // components/Navbar.js
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartItemsCount, setCartItemsCount] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -170,9 +172,29 @@ const Navbar = () => {
 
             {/* Right Side Icons */}
             <div style={iconContainerStyle}>
-              <Link href="/login" style={linkStyle}>
-                👤 Login
-              </Link>
+              {mounted && isAuthenticated ? (
+                <>
+                  <Link href="/profile" style={linkStyle}>
+                    👤 {user?.firstName || 'Profile'}
+                  </Link>
+                  <button 
+                    onClick={logout}
+                    style={{
+                      ...linkStyle,
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '16px'
+                    }}
+                  >
+                    🚪 Logout
+                  </button>
+                </>
+              ) : (
+                <Link href="/login" style={linkStyle}>
+                  👤 Login
+                </Link>
+              )}
               <Link 
                 href="/cart" 
                 style={cartStyle}

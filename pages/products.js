@@ -17,17 +17,39 @@ export default function Products() {
 
   const fetchProducts = async () => {
     try {
+      console.log('=== FRONTEND: Fetching products... ===');
+      console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+      console.log('Current URL:', window.location.href);
+      
       setLoading(true);
       const response = await fetch('/api/products');
+      
+      console.log('API Response status:', response.status);
+      console.log('API Response ok:', response.ok);
+      console.log('API Response headers:', Object.fromEntries(response.headers.entries()));
+      
       const data = await response.json();
+      console.log('Received data:', { 
+        isArray: Array.isArray(data), 
+        length: data?.length, 
+        firstItem: data?.[0] 
+      });
+      
       setProducts(data);
       setFilteredProducts(data);
       
       // Extract unique categories
       const uniqueCategories = ['All', ...new Set(data.map(product => product.category))];
       setCategories(uniqueCategories);
+      
+      console.log('✅ Products loaded successfully:', data.length, 'products');
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('❌ Error fetching products:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
     } finally {
       setLoading(false);
     }
