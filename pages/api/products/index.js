@@ -1,63 +1,72 @@
 // pages/api/products/index.js
 import { prisma } from '../../../lib/prisma'
+import productsData from '../../../data/products.json'
 
 export default async function handler(req, res) {
   console.log('=== PRODUCTS API CALLED ===')
   console.log('Method:', req.method)
   console.log('Query params:', req.query)
   console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL)
-  console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
   
   if (req.method === 'GET') {
+    const { category, search } = req.query
+    
     try {
-      // If Prisma client failed to initialize, return empty array
-      if (!prisma) {
-        console.error('❌ Prisma client not available')
-        return res.status(200).json([])
+      // Try database first if available
+      if (prisma && process.env.DATABASE_URL) {
+        console.log('✅ Attempting database connection')
+        
+        const where = {}
+        
+        if (category && category !== 'All') {
+          where.category = category
+        }
+        
+        if (search) {
+          where.OR = [
+            { name: { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } }
+          ]
+        }
+        
+        console.log('🔍 Querying products with filter:', where)
+        const products = await prisma.product.findMany({
+          where,
+          orderBy: { createdAt: 'desc' }
+        })
+        
+        const safeProducts = Array.isArray(products) ? products : []
+        console.log(`✅ Successfully fetched ${safeProducts.length} products from database`)
+        
+        return res.status(200).json(safeProducts)
       }
-
-      console.log('✅ Prisma client available')
-      const { category, search } = req.query
-      
-      const where = {}
-      
-      if (category && category !== 'All') {
-        where.category = category
-      }
-      
-      if (search) {
-        where.OR = [
-          { name: { contains: search, mode: 'insensitive' } },
-          { description: { contains: search, mode: 'insensitive' } }
-        ]
-      }
-      
-      console.log('🔍 Querying products with filter:', where)
-      const products = await prisma.product.findMany({
-        where,
-        orderBy: { createdAt: 'desc' }
-      })
-      
-      // Ensure we always return an array
-      const safeProducts = Array.isArray(products) ? products : []
-      
-      console.log(`✅ Successfully fetched ${safeProducts.length} products`)
-      console.log('Products preview:', safeProducts.slice(0, 2).map(p => ({ id: p.id, name: p.name })))
-      
-      // Send response immediately without disconnecting
-      return res.status(200).json(safeProducts)
-      
     } catch (error) {
-      console.error('❌ Error fetching products:', error)
-      console.error('Error details:', {
-        message: error.message,
-        code: error.code,
-        stack: error.stack
-      })
-      
-      // Always return an empty array on error to prevent frontend crashes
-      return res.status(500).json({ error: 'Failed to fetch products', products: [] })
+      console.error('❌ Database error, falling back to JSON data:', error.message)
     }
+    
+    // Fallback to JSON data
+    console.log('📄 Using fallback JSON data')
+    let filteredProducts = [...productsData]
+    
+    // Apply category filter
+    if (category && category !== 'All') {
+      filteredProducts = filteredProducts.filter(product => 
+        product.category.toLowerCase() === category.toLowerCase()
+      )
+    }
+    
+    // Apply search filter
+    if (search) {
+      const searchLower = search.toLowerCase()
+      filteredProducts = filteredProducts.filter(product =>
+        product.name.toLowerCase().includes(searchLower) ||
+        product.description.toLowerCase().includes(searchLower)
+      )
+    }
+    
+    console.log(`✅ Returning ${filteredProducts.length} products from JSON fallback`)
+    return res.status(200).json(filteredProducts)
+    
   } else {
     res.setHeader('Allow', ['GET'])
     res.status(405).end(`Method ${req.method} Not Allowed`)
