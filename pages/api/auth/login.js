@@ -17,6 +17,14 @@ export default async function handler(req, res) {
       });
     }
 
+    // Check if database is available
+    if (!prisma || !process.env.DATABASE_URL) {
+      console.error('❌ Database not available for authentication');
+      return res.status(503).json({ 
+        message: 'Authentication service temporarily unavailable. Database not connected.' 
+      });
+    }
+
     // Find user by email
     const user = await prisma.user.findUnique({
       where: { email },
@@ -55,6 +63,14 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Login error:', error);
+    
+    // Check if it's a database connection error
+    if (error.code === 'P1001' || error.message.includes('database')) {
+      return res.status(503).json({ 
+        message: 'Authentication service temporarily unavailable. Please try again later.' 
+      });
+    }
+    
     res.status(500).json({ 
       message: 'Internal server error' 
     });

@@ -17,6 +17,14 @@ export default async function handler(req, res) {
       });
     }
 
+    // Check if database is available
+    if (!prisma || !process.env.DATABASE_URL) {
+      console.error('❌ Database not available for registration');
+      return res.status(503).json({ 
+        message: 'Registration service temporarily unavailable. Database not connected.' 
+      });
+    }
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email }
@@ -55,6 +63,14 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Registration error:', error);
+    
+    // Check if it's a database connection error
+    if (error.code === 'P1001' || error.message.includes('database')) {
+      return res.status(503).json({ 
+        message: 'Registration service temporarily unavailable. Please try again later.' 
+      });
+    }
+    
     res.status(500).json({ 
       message: 'Internal server error' 
     });
