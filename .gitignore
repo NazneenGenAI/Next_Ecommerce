@@ -44,6 +44,7 @@ dev.db*
 # IDE
 .vscode/
 .idea/
+.claude/
 
 # OS
 Thumbs.db
